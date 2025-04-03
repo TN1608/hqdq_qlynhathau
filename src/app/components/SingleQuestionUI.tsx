@@ -33,14 +33,14 @@ export const SingleQuestionUI = ({
             setResult(true)
         }
     };
-    // useEffect(() => {
-    //     if (result) {
-    //         const timer = setTimeout(() => {
-    //             setResult(false);
-    //         }, 2000);
-    //         return () => clearTimeout(timer);
-    //     }
-    // }, [result]);
+    useEffect(() => {
+        if (result) {
+            const timer = setTimeout(() => {
+                setResult(false);
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [result]);
 
     return (
         <div className="w-full h-fit bg-white rounded-lg mx-auto p-4">
