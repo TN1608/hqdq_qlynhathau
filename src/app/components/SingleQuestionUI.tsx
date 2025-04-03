@@ -37,11 +37,16 @@ export const SingleQuestionUI = ({
         if (result) {
             const timer = setTimeout(() => {
                 setResult(false);
+                window.location.reload();
             }, 2000);
             return () => clearTimeout(timer);
         }
     }, [result]);
 
+    const handleClose = () => {
+        setResult(false);
+        window.location.reload();
+    }
     return (
         <div className="w-full h-fit bg-white rounded-lg mx-auto p-4">
             <AnimatePresence>
@@ -82,7 +87,7 @@ export const SingleQuestionUI = ({
                         <div className="flex justify-center mt-4">
                             <Button
                                 variant="outline"
-                                onClick={() => setResult(false)}
+                                onClick={handleClose}
                                 className="px-4 py-2 text-sm"
                             >
                                 Đóng
@@ -113,7 +118,7 @@ export const SingleQuestionUI = ({
                                       ${
                                     isSelected
                                         ? "bg-blue-800 shadow-lg scale-105"
-                                        : "bg-white shadow-md hover:shadow-xl hover:scale-105"
+                                        : "bg-white shadow-md hover:shadow-xl border hover:scale-105"
                                 }
                   ${isHovered && !isSelected ? "bg-gray-50" : ""}
                 `}
