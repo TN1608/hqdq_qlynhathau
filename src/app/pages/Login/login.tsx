@@ -15,20 +15,93 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { motion } from "framer-motion";
+import WebConfig from "@/app/config/WebConfig";
+import api from "@/app/config/axiosConfig/AxiosConfig";
+import CryptoJS from "crypto-js";
 
 export default function Login() {
+  const [employeeId, setEmployeeId] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleLogin = async () => {
+    try {
+      if (!employeeId || !password) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+      }
+      const hashedPassword = CryptoJS.MD5(password).toString();
+      const requestData = {
+        username: employeeId,
+        password: hashedPassword,
+        machine_id: "device-xyz",
+      };
+      const response = await api.post("/api/User/Login", requestData);
+      const responseData = response.data as { token?: string };
+      console.log("Đăng nhập thành công:", responseData);
+      alert("Đăng nhập thành công!");
+      if (responseData.token) {
+        localStorage.setItem("token", responseData.token);
+      }
+    } catch (error) {
+      console.error("Lỗi đăng nhập:", error);
+      alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!");
+    }
+  };
+
   return (
-    <main className="min-h-[400px] mt-4">
-      <div className="relative mt-5  w-full h-fit flex flex-col justify-center items-center">
+    <div className="flex h-screen w-full overflow-hidden">
+      {/* Left side - System Image */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#00428C] relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0 flex items-center justify-center p-10"
+        >
+          <div className="relative w-full max-w-2xl">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="text-white mb-8"
+            >
+              <h1 className="text-4xl font-bold mb-4">
+                Hệ thống quản lý nhà máy
+              </h1>
+              <p className="text-xl opacity-90">
+                Giải pháp toàn diện cho việc quản lý sản xuất và vận hành
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="relative z-10"
+            >
+              <img
+                src={WebConfig.getImageHr}
+                alt="Hệ thống quản lý nhà máy"
+                className="rounded-lg shadow-2xl w-[200%] h-[300%] "
+              />
+            </motion.div>
+
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-400 rounded-full opacity-20 blur-3xl"></div>
+            <div className="absolute -top-10 -right-10 w-72 h-72 bg-blue-300 rounded-full opacity-20 blur-3xl"></div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Right side - Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-10 bg-gray-50">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="w-full max-w-md"
         >
-          <Card className="backdrop-blur-md bg-white/90 shadow-2xl border-0 overflow-hidden">
+          <Card className="backdrop-blur-md bg-white shadow-2xl border-0 overflow-hidden">
             <div className="absolute inset-0 z-0" />
 
             <CardHeader className="relative z-10 space-y-1 pb-6">
@@ -42,7 +115,7 @@ export default function Login() {
                   <Factory className="h-10 w-10 text-white" />
                 </div>
               </motion.div>
-              <CardTitle className="text-3xl text-center font-bold bg-clip-text text-transparent bg-[#00428C]">
+              <CardTitle className="text-3xl text-center font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#00428C] to-[#2672c8]">
                 Đăng nhập
               </CardTitle>
               <CardDescription className="text-center text-gray-600 text-base">
@@ -69,6 +142,8 @@ export default function Login() {
                   </div>
                   <Input
                     id="employeeId"
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
                     placeholder="Nhập mã nhân viên của bạn"
                     className="h-12 pl-10 pr-4 bg-white/80 border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-all rounded-lg"
                   />
@@ -102,6 +177,8 @@ export default function Login() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Nhập mật khẩu của bạn"
                     className="h-12 pl-10 pr-12 bg-white/80 border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-all rounded-lg"
                   />
@@ -149,7 +226,10 @@ export default function Login() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Button className="w-full h-12 text-base font-medium bg-[#00428C] hover:bg-[#2672c8] text-white rounded-lg shadow-lg transition-all duration-300 hover:shadow-blue-500/25">
+                <Button
+                  onClick={handleLogin}
+                  className="w-full h-12 text-base font-medium bg-[#00428C] hover:bg-[#2672c8] text-white rounded-lg shadow-lg transition-all duration-300 hover:shadow-blue-500/25"
+                >
                   Đăng nhập
                 </Button>
               </motion.div>
@@ -157,6 +237,6 @@ export default function Login() {
           </Card>
         </motion.div>
       </div>
-    </main>
+    </div>
   );
 }
